@@ -112,11 +112,13 @@
 (defun priorities ()
   (display-priority-goals *goals-to-display*))
 
-(defun where (&key created description)
+(defun where (&key created description deadline completed)
   #'(lambda (goal)
-      (and
+      (or
        (equal (goal-created goal) created)
-       (equal (goal-description goal) description))))
+       (equal (goal-description goal) description)
+       (equal (goal-deadline goal) deadline)
+       (equal (goal-completed goal) completed))))
 
 (defun select (selector-fn)
   (remove-if-not selector-fn *goals*))
@@ -129,7 +131,14 @@
         (string-downcase (goal-description goal))))
    *goals*))
 
-;;;
+(defun push-deadlines ()
+  (mapcar
+   #'(lambda (goal)
+       (setf (goal-deadline goal)
+             (chronograph:iso-from-universal
+              (+ 86400 (chronograph:universal-from-iso (goal-deadline goal))))))
+  *goals*))
+
 
 (defun save-goals ()
   (with-open-file (out *goals-filename*
