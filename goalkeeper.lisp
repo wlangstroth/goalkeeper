@@ -131,12 +131,12 @@
         (string-downcase (goal-description goal))))
    *goals*))
 
-(defun push-deadlines ()
+(defun push-deadlines (&optional (days 1))
   (mapcar
    #'(lambda (goal)
        (setf (goal-deadline goal)
              (chronograph:iso-from-universal
-              (+ 86400 (chronograph:universal-from-iso (goal-deadline goal))))))
+              (+ (* 86400 days) (chronograph:universal-from-iso (goal-deadline goal))))))
   *goals*))
 
 
