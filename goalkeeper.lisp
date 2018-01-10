@@ -131,14 +131,16 @@
         (string-downcase (goal-description goal))))
    *goals*))
 
-(defun push-deadlines (&optional (days 1))
+(defun advance-deadlines (&optional (days 1))
   (mapcar
    #'(lambda (goal)
-       (setf (goal-deadline goal)
-             (chronograph:iso-from-universal
-              (+ (* 86400 days) (chronograph:universal-from-iso (goal-deadline goal))))))
+       (advance-deadline goal days))
   *goals*))
 
+(defun advance-deadline (goal &optional (days 1))
+  (setf (goal-deadline goal)
+        (chronograph:iso-from-universal
+         (+ (* 86400 days) (chronograph:universal-from-iso (goal-deadline goal))))))
 
 (defun save-goals ()
   (with-open-file (out *goals-filename*
